@@ -1,7 +1,7 @@
 const ffmpeg = require('fluent-ffmpeg');
 const binaries = require('ffmpeg-static').replace('app.asar', 'app.asar.unpacked');
 const fs = require('fs');
-const ytdl = require('ytdl-core');
+const ytdl = require('@distube/ytdl-core');
 const electron = require('electron');
 const path = require('path');
 const ID3Writer = require('browser-id3-writer');
@@ -87,7 +87,7 @@ const singleDownload = async (params, event, playlistTitle = "") => {
     // Given the url of the video, the path in which to store the output, and the video title
     // download the video as an audio only mp4 and write it to a temp file then return
     // the full path for the tmp file, the path in which its stored, and the title of the desired output.
-    let paths = await getVideoAsMp4(params.url, downloadPath, title, event);
+    let paths = await getVideoAsMp4(info, downloadPath, title, event);
 
     // Pass the returned paths and info into the function which will convert the mp4 tmp file into
     // the desired output mp3 file.
@@ -105,7 +105,7 @@ const singleDownload = async (params, event, playlistTitle = "") => {
     event.sender.send('download-status', 'Done', title);
 };
 
-const getVideoAsMp4 = (urlLink, userProvidedPath, title, event) => {
+const getVideoAsMp4 = (videoInfo, userProvidedPath, title, event) => {
     // Tell the user we are starting to get the video.
     event.sender.send('download-status', 'Downloading');
 
@@ -113,7 +113,7 @@ const getVideoAsMp4 = (urlLink, userProvidedPath, title, event) => {
         let fullPath = path.join(userProvidedPath, `tmp_${title}.mp4`);
 
         // Create a reference to the stream of the video being downloaded.
-        let videoObject = ytdl(urlLink, {filter: 'audioonly'});
+        let videoObject = ytdl.downloadFromInfo(videoInfo, {filter: 'audio'});
 
         videoObject.on('progress', (chunkLength, downloaded, total) => {
             let newVal = Math.floor((downloaded / total) * 100 / 2);
