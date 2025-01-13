@@ -1,7 +1,7 @@
 const ffmpeg = require('fluent-ffmpeg');
 const binaries = require('ffmpeg-static').replace('app.asar', 'app.asar.unpacked');
 const fs = require('fs');
-const ytdl = require('ytdl-core');
+const ytdl = require('@distube/ytdl-core');
 const electron = require('electron');
 const path = require('path');
 const ID3Writer = require('browser-id3-writer');
